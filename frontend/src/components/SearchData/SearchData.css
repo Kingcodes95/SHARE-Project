@@ -1,0 +1,24 @@
+.search-div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 10rem;
+}
+.search-div input {
+    width: 20rem;
+    padding: .5rem;
+    border-radius: 5px;
+    border-style: none;
+    margin-right: .5rem;
+}
+.search-div button {
+    padding: .5rem;
+    border-radius: 5px;
+    border-style: none;
+    cursor: pointer;
+    background: brown;
+    color: white;
+}
+.search-div button:hover {
+    background-color: #de9848;
+}

@@ -1,0 +1,14 @@
+/* This is for the login page to center the login box */
+.login-page {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/* Peoples data page */
+.Peoples-Data-page {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

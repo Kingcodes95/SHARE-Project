@@ -1,0 +1,7 @@
+food
+clothing
+utilitys
+gas voucher
+prescription drugs
+--------------------
+miscelanious
