@@ -1,49 +1,32 @@
-from fastapi import APIRouter, Depends, HTTPException
-# API router for route organization
-# HTTP for errors
-# Depends allows injection
-
-from fastapi.security import OAuth2PasswordRequestForm
-# parses user and pass login
-
-from sqlalchemy.orm import Session
-from passlib.context import CryptContext # for password hashing and verification
-
-from jose import JWTError, jwt
-
-from datetime import datetime, timedelta, timezone
-
-from .models import User
-from .schemas import Token
-from .database import get_db
-import os
+from fastapi import APIRouter, HTTPException
+from app.supabase_client import supabase
 
 router = APIRouter()
 
-SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = os.getenv("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+@router.post("/register")
+def register(email: str, password: str):
+    result = supabase.auth.sign_up({"email": email, "password": password})
+    if result.user is None:
+        raise HTTPException(status_code=400, detail=str(result))
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    user_id = result.user.id
+    # Insert or update role in your `users` table
+    supabase.table("users").insert({
+        "id": user_id,
+        "email": email,
+        "role": "volunteer"  # default role
+    }).execute()
 
-def verify_password(plain, hashed):
-    return pwd_context.verify(plain, hashed)
+    return {"msg": "User registered", "user": result.user.email}
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
 
-def create_access_token(data: dict, expires_delta=None):
-    to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=15))
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-
-@router.post("/login", response_model=Token)
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == form_data.username).first()
-
-    if not user or not verify_password(form_data.password, user.hashed_password):
-        raise HTTPException(status_code=400, detail="Wrong username or password")
-    
-    token = create_access_token(data={"sub": user.username, "role": user.role.value})
-    return {"access_token": token, "token_type": "bearer"}
+@router.post("/login")
+def login(email: str, password: str):
+    result = supabase.auth.sign_in_with_password({"email": email, "password": password})
+    if result.session is None:
+        raise HTTPException(status_code=400, detail="Invalid credentials")
+    return {
+        "msg": "Logged in",
+        "access_token": result.session.access_token,
+        "user": result.user.email,
+    }
