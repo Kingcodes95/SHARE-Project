@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.auth.routes import router as auth_router  # Import the auth router
+from app.auth.routes import router as auth_router
+from app.auth.sessions import router as sessions_router  # Import the auth router
 import os
 import uvicorn
 
@@ -25,6 +26,7 @@ def read_root():
 
 
 app.include_router(auth_router)
+app.include_router(sessions_router)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
