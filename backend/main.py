@@ -23,8 +23,8 @@ app.add_middleware(
 def read_root():
     return {"message": "Hello, world!"}
 
-# Include the authentication routes under the /auth prefix
-app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
+
+app.include_router(auth_router)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))

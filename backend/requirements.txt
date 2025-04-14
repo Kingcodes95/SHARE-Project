@@ -3,3 +3,5 @@ uvicorn
 python-dotenv
 supabase
 pyjwt
+bcrypt
+redis
