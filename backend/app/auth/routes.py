@@ -36,7 +36,7 @@ async def signup(user: UserSignup):
         profile_response = supabase.table("users").insert({
             "id": response.user.id,
             "email": user.email,
-            "password": hashed_password,  # Consider hashing this if storing it is necessary
+            "password": hashed_password,  
             "username": user.username,
             "role": user.role
         }).execute()
