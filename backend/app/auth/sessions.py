@@ -1,11 +1,34 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.database import supabase
 from app.models import UserLogin
 import bcrypt
 import logging
 
 router = APIRouter()
+auth_scheme = HTTPBearer()
 SESSION_TIMEOUT = 10 * 60 # 10 mins for now
+
+def verify_token(credentials: HTTPAuthorizationCredentials = Depends(auth_scheme)):
+    try:
+        token = credentials.credentials
+        supabase.auth.session().access_token = token
+        user = supabase.auth.get_user()
+        return user
+    except Exception:
+        logging.exception("Invalid or expired token")
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+@router.post("/auth/logout")
+async def logout(credentials: HTTPAuthorizationCredentials = Depends(auth_scheme)):
+    try:
+        token = credentials.credentials
+        supabase.auth.set_session(token, "")  # If refresh token is needed, use both
+        supabase.auth.sign_out()
+        return {"message": "Logged out successfully"}
+    except Exception as e:
+        logging.exception("Logout failed")
+        raise HTTPException(status_code=400, detail=f"Logout failed: {str(e)}")
 
 
 @router.post('/auth/login')
@@ -36,4 +59,12 @@ async def login(user: UserLogin):
         logging.exception("Error signing in")
         raise HTTPException(status_code=400, detail="Invalid username or password")
     
-    return {"message": "Logged in successfully"}
+    return {
+        "message": "Logged in successfully",
+        "access_token": auth_response.session.access_token,
+        "refresh_token": auth_response.session.refresh_token,
+        "user": {
+            "id": auth_response.user.id,
+            "email": auth_response.user.email
+        }
+    }

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.database import supabase
-from app.models import UserSignup, UserLogin
+from app.models import UserSignup
 from app.auth.jwt_utils import verify_jwt
 import bcrypt
 import logging
