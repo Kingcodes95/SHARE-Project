@@ -1,14 +1,14 @@
 import './Pages.css';
-import Login from "../components/Login/Login";
+import LoginUI from "../components/Login/LoginUI";
 
-function Home() {
+function Login() {
     return(
         <>
             <div className="login-page">
-                <Login />
+                <LoginUI />
             </div>
         </>
     );
 }
 
-export default Home;
+export default Login;
