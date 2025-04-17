@@ -1,6 +1,6 @@
 import './LoginUI.css';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { createCookie, isCookie, useNavigate } from 'react-router-dom';
 
 function Login() {
     const [username, setUsername] = useState("");
@@ -35,7 +35,7 @@ function Login() {
             localStorage.setItem("supabase_token", result.token);
             localStorage.setItem("refresh_token", result.refresh_token);
             localStorage.setItem("user", JSON.stringify(result.user));
-      
+
             console.log("Login success, Loading..");
             navigate("/data");
 

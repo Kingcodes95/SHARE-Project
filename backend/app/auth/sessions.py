@@ -66,5 +66,6 @@ async def login(user: UserLogin):
         "user": {
             "id": auth_response.user.id,
             "email": auth_response.user.email,
+            "role": auth_response.user.role
         }
     }
