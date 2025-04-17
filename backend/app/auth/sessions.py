@@ -65,6 +65,6 @@ async def login(user: UserLogin):
         "refresh_token": auth_response.session.refresh_token,
         "user": {
             "id": auth_response.user.id,
-            "email": auth_response.user.email
+            "email": auth_response.user.email,
         }
     }
