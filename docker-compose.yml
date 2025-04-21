@@ -1,59 +1,25 @@
 services:
-  postgres_db:
-    image: postgres:15
-    container_name: postgres_db
-    restart: always
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER:     ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB:       ${POSTGRES_DB:-mydatabase}
-
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    restart: always
-    ports:
-      - "8080:80"
-    depends_on:
-      - postgres_db
-    environment:
-      PGADMIN_DEFAULT_EMAIL:    ${PGADMIN_DEFAULT_EMAIL:-admin@admin.com}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
-
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: ./backend      # Points to the backend folder
+      dockerfile: Dockerfile    
     container_name: backend_app
-    restart: always
     ports:
       - "8000:8000"
-    depends_on:
-      - postgres_db
+    # environment:
+    #   - SUPABASE_URL=${SUPABASE_URL}
+    #   - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+    #   - JWT_SECRET=${JWT_SECRET}
+    #   - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+    #   - OPENAI_API_KEY=${OPENAI_API_KEY}
     volumes:
       - ./backend:/app
-    environment:
-      # ← Inline, no folds!
-      URL_DATABASE: "postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres_db:5432/${POSTGRES_DB:-mydatabase}"
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: ./frontend     # Points to the frontend folder
+      dockerfile: Dockerfile   
     container_name: frontend_app
-    restart: always
     ports:
-      - "3000:3000"
-    depends_on:
-      - backend
-    volumes:
-      - ./frontend:/app
-    command: serve -s build -l 3000
-
-volumes:
-  postgres_data:
+      - "3000:3000"           
