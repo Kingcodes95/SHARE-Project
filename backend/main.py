@@ -5,22 +5,23 @@ import uvicorn
 
 app = FastAPI()
 
-# Define allowed origins
-origins = ["*"]
-
-# Configure CORS middleware
+origins = [
+    "http://localhost:3000"
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Adjust this list or keep "*" if needed
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Root endpoint
+# Test route
 @app.get("/")
 def read_root():
     return {"message": "Hello, world!"}
+
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
