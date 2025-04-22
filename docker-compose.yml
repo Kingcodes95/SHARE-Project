@@ -6,9 +6,9 @@ services:
     container_name: backend_app
     ports:
       - "8000:8000"
-    # environment:
-    #   - SUPABASE_URL=${SUPABASE_URL}
-    #   - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
     #   - JWT_SECRET=${JWT_SECRET}
     #   - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
     #   - OPENAI_API_KEY=${OPENAI_API_KEY}

@@ -1,3 +1,5 @@
 uvicorn
 dotenv
 fastapi
+supabase
+bcrypt
