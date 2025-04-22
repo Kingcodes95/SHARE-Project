@@ -71,3 +71,9 @@
 .login-button-div button:hover {
     background-color: #de9848;
 }
+.error {
+    display: flex;
+    justify-content: center;
+    margin-top: -10px;
+    color: red;
+}

@@ -81,7 +81,7 @@ async def login(User: LoginRequest):
             "password": User.password
         })
     except Exception:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Invalid username and password')
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Invalid username or password')
     
 
     profile_meta_data = supabase.table('Share-Users').select('username', 'role').eq('id', auth_response.user.id).single().execute()
