@@ -19,14 +19,23 @@
     margin-bottom: .2rem;
     background-color: white;
     cursor: pointer;
-
+}
+.user-tile {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
+    text-decoration: none;
+    color: black;
+}
+.scroll-box-name {
+    display: flex;
     align-items: center;
+    justify-content: left;
+    width: 50%;
+    margin-left: -3em;
 }
 .pick-up-status {
     display: flex;
-    gap: 1rem;
+    gap: .5rem;
 }
 .scroll-box-container li:hover {
     list-style: none;
