@@ -13,3 +13,13 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(a
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Invalid or expired token')
 
     return user_response.user
+
+def role_required(*allowed_roles):
+    async def role_checker(user=Depends(get_current_user)):
+        user_role = user.user_metadata.get('role')
+        try:
+            user_role
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Insufficent access')
+        return user
+    return role_checker
