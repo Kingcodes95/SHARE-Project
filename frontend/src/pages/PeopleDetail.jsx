@@ -1,4 +1,4 @@
-import BasicInfo from "../components/BasicInfor/BasicInfo";
+import BasicInfo from "../components/BasicInfo/BasicInfo";
 import { useNavigate } from "react-router-dom";
 import './Pages.css';
 
