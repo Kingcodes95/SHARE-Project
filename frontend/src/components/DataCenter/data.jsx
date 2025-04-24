@@ -1,14 +1,92 @@
-// src/data/people.js
+const data1 = [
+	{
+		id: 1,
+		firstName: "Ronnie",
+		lastName: "Perez",
+		lastPickUp: "4/20/24",
+		phone: "555-1234",
+		notes: "Loves tech.",
+	},
+	{
+		id: 2,
+		firstName: "Carmen",
+		lastName: "Coldiron",
+		lastPickUp: "2/12/24",
+		phone: "555-5678",
+		notes: "Prefers mornings.",
+	},
+	{
+		id: 3,
+		firstName: "Eric",
+		lastName: "Dodd",
+		lastPickUp: "4/01/24",
+		phone: "555-9012",
+		notes: "Vegan.",
+	},
+	{
+		id: 4,
+		firstName: "Amelia",
+		lastName: "Snow",
+		lastPickUp: "10/20/24",
+		phone: "555-3456",
+		notes: "Wants recipe cards.",
+	},
+	{
+		id: 5,
+		firstName: "Ethan",
+		lastName: "Gleason",
+		lastPickUp: "12/20/24",
+		phone: "555-7890",
+		notes: "Has allergies.",
+	},
+	{
+		id: 6,
+		firstName: "Cliff",
+		lastName: "Coldiron",
+		lastPickUp: "6/20/24",
+		phone: "555-2345",
+		notes: "",
+	},
+	{
+		id: 7,
+		firstName: "Billy",
+		lastName: "Bob",
+		lastPickUp: "7/22/24",
+		phone: "555-6789",
+		notes: "",
+	},
+	{
+		id: 8,
+		firstName: "Meredith",
+		lastName: "Gleason",
+		lastPickUp: "5/07/23",
+		phone: "555-0123",
+		notes: "",
+	},
+];
+
 const data = [
-    { id: 1, firstName: "Ronnie",   lastName: "Perez",     lastPickUp: "4/20/24", phone: "555-1234", notes: "Loves tech." },
-    { id: 2, firstName: "Carmen",   lastName: "Coldiron",  lastPickUp: "2/12/24", phone: "555-5678", notes: "Prefers mornings." },
-    { id: 3, firstName: "Eric",     lastName: "Dodd",      lastPickUp: "4/01/24", phone: "555-9012", notes: "Vegan." },
-    { id: 4, firstName: "Amelia",   lastName: "Snow",      lastPickUp: "10/20/24",phone: "555-3456", notes: "Wants recipe cards." },
-    { id: 5, firstName: "Ethan",    lastName: "Gleason",   lastPickUp: "12/20/24",phone: "555-7890", notes: "Has allergies." },
-    { id: 6, firstName: "Cliff",    lastName: "Coldiron",  lastPickUp: "6/20/24", phone: "555-2345", notes: "" },
-    { id: 7, firstName: "Billy",    lastName: "Bob",       lastPickUp: "7/22/24", phone: "555-6789", notes: "" },
-    { id: 8, firstName: "Meredith", lastName: "Gleason",   lastPickUp: "5/07/23", phone: "555-0123", notes: "" }
-  ];
-  
-  export default data;
-  
+	{
+		id: 1,
+		lastPickUp: "4/20/24",
+		firstName: "Ronnie",
+		lastName: "Perez",
+		DL: "TX029384",
+		DOB: "10/08/1995",
+		Address: "2337 Ravenhurst dr",
+		APT: "",
+		City: "Plano",
+		Phone: "972-837-0510",
+		State: "Tx",
+		Zip: "75025",
+		Medicaid: "",
+		Medicare: "",
+		Church: "",
+		Age: 29,
+		Ethnicitiy: "Native Islander",
+		MaritalStatus: "Not Married",
+		RegistrationDate: "02/03/10",
+	},
+];
+
+export default data;

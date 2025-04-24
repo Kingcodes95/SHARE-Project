@@ -12,3 +12,15 @@
     flex-direction: column;
     align-items: center;
 }
+/* Peoples Details page */
+.Home-button {
+    margin: 1em;
+    margin-bottom: 0;
+    padding: .5em;
+    border-radius: 8px;
+    border-style: none;
+}
+.Home-button:hover {
+    background-color: blue;
+    color: white;
+}
