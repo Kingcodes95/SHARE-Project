@@ -19,6 +19,7 @@
 	padding: 0.5rem 1rem;
 	border-radius: 4px;
 	cursor: pointer;
+	margin-top: 3rem;
 }
 
 .BasicInfo-edit-button {
@@ -28,6 +29,7 @@
 	padding: 0.5rem 1rem;
 	border-radius: 4px;
 	cursor: pointer;
+	margin-top: 3rem;
 }
 
 .edit-button-div {

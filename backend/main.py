@@ -2,12 +2,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.supabase_client.supabase_client import router as auth_router
 from app.supabase_client.secured import router as secured_router
+from app.supabase_client.client_routes import router as client_router
 import os
 import uvicorn
 
 app = FastAPI()
 app.include_router(auth_router, prefix='/auth')
 app.include_router(secured_router, prefix='/secured-route')
+app.include_router(client_router, prefix='/clients')
 
 origins = [
     "http://localhost:3000"

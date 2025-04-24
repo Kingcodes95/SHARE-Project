@@ -1,103 +1,116 @@
 import { useParams, useLocation, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import data from "../DataCenter/data";
+import fetchClients from "../DataCenter/data";
 import "./BasicInfo.css";
 
 export default function BasicInfo() {
-	const { id } = useParams();
-	const location = useLocation();
-	const [user, setUser] = useState(location.state?.user ?? null);
-	const [editMode, setEditMode] = useState(false);
-	const [formData, setFormData] = useState({});
+  const { id } = useParams();
+  const location = useLocation();
+  const initialUser = location.state?.user;
+  const [user, setUser] = useState(initialUser ?? null);
+  const [loading, setLoading] = useState(initialUser ? false : true);
+  const [error, setError] = useState(null);
+  const [editMode, setEditMode] = useState(false);
+  const [formData, setFormData] = useState({});
 
-	useEffect(() => {
-		if (user) setFormData({ ...user });
-	}, [user]);
+  useEffect(() => {
+    if (user) setFormData({ ...user });
+  }, [user]);
 
-	useEffect(() => {
-		if (!user) {
-			const found = data.find((p) => p.id === parseInt(id, 10));
-			setUser(found ?? undefined);
-		}
-	}, [id, user]);
+  useEffect(() => {
+    if (user !== null) return;
+    fetchClients()
+      .then(clients => {
+        const found = clients.find(c => `${c.id}` === id);
+        setUser(found || undefined);
+      })
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [id, user]);
 
-	if (user === undefined) {
-		return (
-			<div className="BasicInfo-container">
-				<Link to="/data">← Back</Link>
-				<p>User not found.</p>
-			</div>
-		);
-	}
+  if (loading) return <p>Loading…</p>;
+  if (error)
+    return (
+      <div className="BasicInfo-container">
+        <Link to="/data">← Back</Link>
+        <p style={{ color: "red" }}>{error}</p>
+      </div>
+    );
+  if (user === undefined)
+    return (
+      <div className="BasicInfo-container">
+        <Link to="/data">← Back</Link>
+        <p>User not found.</p>
+      </div>
+    );
 
-	if (!user) {
-		return <p>Loading…</p>;
-	}
+  const schema = [
+    { label: "First Name", key: "firstName" },
+    { label: "Last Name", key: "lastName" },
+    { label: "Date of Birth", key: "DOB" },
+    { label: "Age", key: "Age" },
+    { label: "Ethnicity", key: "Ethnicity" },
+    { label: "Marital Status", key: "MaritalStatus" },
+    { label: "DL / ID #", key: "DL" },
+    { label: "Medicaid", key: "Medicaid" },
+    { label: "Medicare", key: "Medicare" },
+    { label: "Phone", key: "Phone" },
+    { label: "Address", key: "Address" },
+    { label: "Apt #", key: "APT" },
+    { label: "City", key: "City" },
+    { label: "State", key: "State" },
+    { label: "Zip", key: "Zip" },
+    { label: "Church Home", key: "Church" },
+    { label: "Registration Date", key: "RegistrationDate" },
+	{ label: "last pick up", key: "last_pick_up"}
+  ];
 
-	const schema = [
-		{ label: "First Name", key: "firstName" },
-		{ label: "Last Name", key: "lastName" },
-		{ label: "Date of Birth", key: "DOB" },
-		{ label: "Age", key: "Age" },
-		{ label: "Ethnicity", key: "Ethnicitiy" },
-		{ label: "Marital Status", key: "MaritalStatus" },
-		{ label: "DL / ID #", key: "DL" },
-		{ label: "Medicaid", key: "Medicaid" },
-		{ label: "Medicare", key: "Medicare" },
-		{ label: "Phone", key: "Phone" },
-		{ label: "Address", key: "Address" },
-		{ label: "Apt #", key: "APT" },
-		{ label: "City", key: "City" },
-		{ label: "State", key: "State" },
-		{ label: "Zip", key: "Zip" },
-		{ label: "Church Home", key: "Church" },
-		{ label: "Registration Date", key: "RegistrationDate" },
-	];
+  const handleChange = key => e =>
+    setFormData(prev => ({ ...prev, [key]: e.target.value }));
 
-	const handleChange = (key) => (e) =>
-		setFormData({ ...formData, [key]: e.target.value });
+  const handleSave = () => {
+    setUser({ ...formData });
+    setEditMode(false);
+  };
 
-	const handleSave = () => {
-		setUser({ ...formData });
-		setEditMode(false);
-	};
+  const handleCancel = () => {
+    setFormData({ ...user });
+    setEditMode(false);
+  };
 
-	const handleCancel = () => {
-		setFormData({ ...user });
-		setEditMode(false);
-	};
-
-	return (
-		<div className="BasicInfo-container">
-			<div className="BasicInfo-actions">
-			</div>
-			<div className="BasicInfo-content-container">
-				{schema.map(({ label, key }) => {
-					const value = editMode ? formData[key] : user[key];
-					if (value === undefined || value === null) return null;
-					return (
-						<div className="BasicInfo-field" key={key}>
-							<span className="BasicInfo-term">{label}:</span>
-							{editMode ? (
-								<input value={value} onChange={handleChange(key)} />
-							) : (
-								<span className="BasicInfo-desc">{value}</span>
-							)}
-						</div>
-					);
-				})}
-                
-			</div>
-			{editMode && (
-				<div className="BasicInfo-actions">
-					<button onClick={handleSave}>Save</button>
-					<button onClick={handleCancel}>Cancel</button>
-				</div>
-			)}
-            <div className="edit-button-div">
-            {!editMode && <button onClick={() => setEditMode(true)} className="BasicInfo-edit-button">Update</button>}
+  return (
+    <div className="BasicInfo-container">
+      <div className="BasicInfo-content-container">
+        {schema.map(({ label, key }) => {
+          const value = editMode ? formData[key] : user[key];
+          if (value === undefined || value === null) return null;
+          return (
+            <div className="BasicInfo-field" key={key}>
+              <span className="BasicInfo-term">{label}:</span>
+              {editMode ? (
+                <input value={value} onChange={handleChange(key)} />
+              ) : (
+                <span className="BasicInfo-desc">{value}</span>
+              )}
             </div>
-		</div>
-        
-	);
+          );
+        })}
+      </div>
+      {editMode ? (
+        <div className="BasicInfo-actions">
+          <button onClick={handleSave}>Save</button>
+          <button onClick={handleCancel}>Cancel</button>
+        </div>
+      ) : (
+        <div className="edit-button-div">
+          <button
+            onClick={() => setEditMode(true)}
+            className="BasicInfo-edit-button"
+          >
+            Update
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }
