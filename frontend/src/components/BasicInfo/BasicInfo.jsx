@@ -4,113 +4,147 @@ import fetchClients from "../DataCenter/data";
 import "./BasicInfo.css";
 
 export default function BasicInfo() {
-  const { id } = useParams();
-  const location = useLocation();
-  const initialUser = location.state?.user;
-  const [user, setUser] = useState(initialUser ?? null);
-  const [loading, setLoading] = useState(initialUser ? false : true);
-  const [error, setError] = useState(null);
-  const [editMode, setEditMode] = useState(false);
-  const [formData, setFormData] = useState({});
+	const { id } = useParams();
+	const location = useLocation();
+	const initialUser = location.state?.user;
+	const [user, setUser] = useState(initialUser ?? null);
+	const [loading, setLoading] = useState(initialUser ? false : true);
+	const [error, setError] = useState(null);
+	const [editMode, setEditMode] = useState(false);
+	const [formData, setFormData] = useState({});
 
-  useEffect(() => {
-    if (user) setFormData({ ...user });
-  }, [user]);
+	useEffect(() => {
+		if (user) setFormData({ ...user });
+	}, [user]);
 
-  useEffect(() => {
-    if (user !== null) return;
-    fetchClients()
-      .then(clients => {
-        const found = clients.find(c => `${c.id}` === id);
-        setUser(found || undefined);
-      })
-      .catch(err => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [id, user]);
+	useEffect(() => {
+		if (user !== null) return;
+		fetchClients()
+			.then((clients) => {
+				const found = clients.find((c) => `${c.id}` === id);
+				setUser(found || undefined);
+			})
+			.catch((err) => setError(err.message))
+			.finally(() => setLoading(false));
+	}, [id, user]);
 
-  if (loading) return <p>Loading…</p>;
-  if (error)
-    return (
-      <div className="BasicInfo-container">
-        <Link to="/data">← Back</Link>
-        <p style={{ color: "red" }}>{error}</p>
-      </div>
-    );
-  if (user === undefined)
-    return (
-      <div className="BasicInfo-container">
-        <Link to="/data">← Back</Link>
-        <p>User not found.</p>
-      </div>
-    );
+	if (loading) return <p>Loading…</p>;
+	if (error)
+		return (
+			<div className="BasicInfo-container">
+				<Link to="/data">← Back</Link>
+				<p style={{ color: "red" }}>{error}</p>
+			</div>
+		);
+	if (user === undefined)
+		return (
+			<div className="BasicInfo-container">
+				<Link to="/data">← Back</Link>
+				<p>User not found.</p>
+			</div>
+		);
 
-  const schema = [
-    { label: "First Name", key: "firstName" },
-    { label: "Last Name", key: "lastName" },
-    { label: "Date of Birth", key: "DOB" },
-    { label: "Age", key: "Age" },
-    { label: "Ethnicity", key: "Ethnicity" },
-    { label: "Marital Status", key: "MaritalStatus" },
-    { label: "DL / ID #", key: "DL" },
-    { label: "Medicaid", key: "Medicaid" },
-    { label: "Medicare", key: "Medicare" },
-    { label: "Phone", key: "Phone" },
-    { label: "Address", key: "Address" },
-    { label: "Apt #", key: "APT" },
-    { label: "City", key: "City" },
-    { label: "State", key: "State" },
-    { label: "Zip", key: "Zip" },
-    { label: "Church Home", key: "Church" },
-    { label: "Registration Date", key: "RegistrationDate" },
-	{ label: "last pick up", key: "last_pick_up"}
-  ];
+	const schema = [
+		{ label: "First Name", key: "firstName" },
+		{ label: "Last Name", key: "lastName" },
+		{ label: "Date of Birth", key: "DOB" },
+		{ label: "Age", key: "Age" },
+		{ label: "Ethnicity", key: "Ethnicity" },
+		{ label: "Marital Status", key: "MaritalStatus" },
+		{ label: "DL / ID #", key: "DL" },
+		{ label: "Medicaid", key: "Medicaid" },
+		{ label: "Medicare", key: "Medicare" },
+		{ label: "Phone", key: "Phone" },
+		{ label: "Address", key: "Address" },
+		{ label: "Apt #", key: "APT" },
+		{ label: "City", key: "City" },
+		{ label: "State", key: "State" },
+		{ label: "Zip", key: "Zip" },
+		{ label: "Church Home", key: "Church" },
+		{ label: "Registration Date", key: "RegistrationDate" },
+		{ label: "last pick up", key: "last_pick_up" },
+	];
 
-  const handleChange = key => e =>
-    setFormData(prev => ({ ...prev, [key]: e.target.value }));
+	const handleChange = (key) => (e) =>
+		setFormData((prev) => ({ ...prev, [key]: e.target.value }));
 
-  const handleSave = () => {
-    setUser({ ...formData });
-    setEditMode(false);
-  };
+	const handleSave = async () => {
+		const updates = {};
 
-  const handleCancel = () => {
-    setFormData({ ...user });
-    setEditMode(false);
-  };
+		for (const key in formData) {
+			if (formData[key] !== user[key]) {
+				updates[key] = formData[key];
+			}
+		}
 
-  return (
-    <div className="BasicInfo-container">
-      <div className="BasicInfo-content-container">
-        {schema.map(({ label, key }) => {
-          const value = editMode ? formData[key] : user[key];
-          if (value === undefined || value === null) return null;
-          return (
-            <div className="BasicInfo-field" key={key}>
-              <span className="BasicInfo-term">{label}:</span>
-              {editMode ? (
-                <input value={value} onChange={handleChange(key)} />
-              ) : (
-                <span className="BasicInfo-desc">{value}</span>
-              )}
-            </div>
-          );
-        })}
-      </div>
-      {editMode ? (
-        <div className="BasicInfo-actions">
-          <button onClick={handleSave}>Save</button>
-          <button onClick={handleCancel}>Cancel</button>
-        </div>
-      ) : (
-        <div className="edit-button-div">
-          <button
-            onClick={() => setEditMode(true)}
-            className="BasicInfo-edit-button"
-          >
-            Update
-          </button>
-        </div>
-      )}
-    </div>
-  );
+		if (Object.keys(updates).length === 0) {
+			setEditMode(false);
+			return;
+		}
+
+		try {
+			const res = await fetch(`http://localhost:8000/clients/${user.id}`, {
+				method: "PATCH",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(updates),
+			});
+
+      // console.log("Saving user with ID:", user.id);
+      // console.log("Updates payload:", updates);
+
+
+			if (!res.ok) {
+				throw new Error("Failed to update user");
+			}
+
+			const updatedUser = await res.json();
+			setUser(updatedUser);
+			setFormData(updatedUser);
+			setEditMode(false);
+		} catch (err) {
+			setError(err.message);
+		}
+	};
+
+	const handleCancel = () => {
+		setFormData({ ...user });
+		setEditMode(false);
+	};
+
+	return (
+		<div className="BasicInfo-container">
+			<div className="BasicInfo-content-container">
+				{schema.map(({ label, key }) => {
+					const value = editMode ? formData[key] : user[key];
+					if (value === undefined || value === null) return null;
+					return (
+						<div className="BasicInfo-field" key={key}>
+							<span className="BasicInfo-term">{label}:</span>
+							{editMode ? (
+								<input value={value} onChange={handleChange(key)} />
+							) : (
+								<span className="BasicInfo-desc">{value}</span>
+							)}
+						</div>
+					);
+				})}
+			</div>
+			{editMode ? (
+				<div className="BasicInfo-actions">
+					<button onClick={handleSave}>Save</button>
+					<button onClick={handleCancel}>Cancel</button>
+				</div>
+			) : (
+				<div className="edit-button-div">
+					<button
+						onClick={() => setEditMode(true)}
+						className="BasicInfo-edit-button">
+						Update
+					</button>
+				</div>
+			)}
+		</div>
+	);
 }
