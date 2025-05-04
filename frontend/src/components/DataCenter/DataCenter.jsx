@@ -1,50 +1,50 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import fetchClients from "./data";
+import { fetchClients } from "./data";
 import "./DataCenter.css";
 
 export default function DataCenter({ searchQuery }) {
-  const [clients, setClients] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+	const {
+		data: clients = [],
+		isLoading,
+		isError,
+		error,
+	} = useQuery({
+		queryKey: ["clients"],
+		queryFn: fetchClients,
+		staleTime: 1000 * 60 * 5,
+	});
 
-  useEffect(() => {
-    fetchClients()
-      .then(data => setClients(data))
-      .catch(err => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
+	const filtered = clients.filter(user =>
+		`${user.firstName} ${user.lastName}`
+			.toLowerCase()
+			.includes(searchQuery.toLowerCase())
+	);
 
-  if (loading) return <p>Loading…</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+	if (isLoading) return <p>Loading…</p>;
+	if (isError) return <p style={{ color: "red" }}>{error.message}</p>;
 
-  const filtered = clients.filter(user =>
-    `${user.firstName} ${user.lastName}`
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase())
-  );
-
-  return (
-    <div className="scroll-box-container">
-      <ul>
-        {filtered.map(user => (
-          <li key={user.id}>
-            <Link
-              to={`/data/${user.id}`}
-              state={{ user }}
-              className="user-tile"
-            >
-              <div className="scroll-box-name">
-                <h4>{user.firstName} {user.lastName}</h4>
-              </div>
-              <div className="pick-up-status">
-                <h4>Last pick up:</h4>
-                <h4>{user.last_pick_up}</h4>
-              </div>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+	return (
+		<div className="scroll-box-container">
+			<ul>
+				{filtered.map(user => (
+					<li key={user.id}>
+						<Link
+							to={`/data/${user.id}`}
+							state={{ user }}
+							className="user-tile"
+						>
+							<div className="scroll-box-name">
+								<h4>{user.firstName} {user.lastName}</h4>
+							</div>
+							<div className="pick-up-status">
+								<h4>Last pick up:</h4>
+								<h4>{user.last_pick_up}</h4>
+							</div>
+						</Link>
+					</li>
+				))}
+			</ul>
+		</div>
+	);
 }

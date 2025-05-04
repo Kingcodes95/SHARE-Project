@@ -1,6 +1,7 @@
 import { useParams, useLocation, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import fetchClients from "../DataCenter/data";
+import { fetchClients } from "../DataCenter/data";
+import { useQueryClient } from "@tanstack/react-query";
 import "./BasicInfo.css";
 
 export default function BasicInfo() {
@@ -12,6 +13,7 @@ export default function BasicInfo() {
 	const [error, setError] = useState(null);
 	const [editMode, setEditMode] = useState(false);
 	const [formData, setFormData] = useState({});
+	const queryClient = useQueryClient();
 
 	useEffect(() => {
 		if (user) setFormData({ ...user });
@@ -103,6 +105,12 @@ export default function BasicInfo() {
 			setUser(updatedUser);
 			setFormData(updatedUser);
 			setEditMode(false);
+
+			queryClient.setQueryData(["clients"], (oldData) => {
+				if (!oldData) return oldData;
+				return oldData.map((c) => (c.id === updatedUser.id ? updatedUser : c));
+			});
+
 		} catch (err) {
 			setError(err.message);
 		}

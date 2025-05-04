@@ -1,4 +1,4 @@
-export default async function fetchClients() {
+export async function fetchClients() {
 	const token = localStorage.getItem("access_token");
 	const res = await fetch("http://localhost:8000/clients", {
 		headers: {
