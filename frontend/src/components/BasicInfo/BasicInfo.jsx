@@ -1,4 +1,4 @@
-import { useParams, useLocation, Link } from "react-router-dom";
+import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { fetchClients } from "../DataCenter/data";
 import { useQueryClient } from "@tanstack/react-query";
@@ -14,6 +14,13 @@ export default function BasicInfo() {
 	const [editMode, setEditMode] = useState(false);
 	const [formData, setFormData] = useState({});
 	const queryClient = useQueryClient();
+	const navigate = useNavigate();
+
+	const rawUser = localStorage.getItem("user");
+	const loggedInUser = rawUser ? JSON.parse(rawUser) : {};
+	const access_token = localStorage.getItem("access_token");
+	const refreshToken = localStorage.getItem("refresh_token");
+	const role = loggedInUser.role;
 
 	useEffect(() => {
 		if (user) setFormData({ ...user });
@@ -29,22 +36,6 @@ export default function BasicInfo() {
 			.catch((err) => setError(err.message))
 			.finally(() => setLoading(false));
 	}, [id, user]);
-
-	if (loading) return <p>Loading…</p>;
-	if (error)
-		return (
-			<div className="BasicInfo-container">
-				<Link to="/data">← Back</Link>
-				<p style={{ color: "red" }}>{error}</p>
-			</div>
-		);
-	if (user === undefined)
-		return (
-			<div className="BasicInfo-container">
-				<Link to="/data">← Back</Link>
-				<p>User not found.</p>
-			</div>
-		);
 
 	const schema = [
 		{ label: "First Name", key: "firstName" },
@@ -110,35 +101,86 @@ export default function BasicInfo() {
 		setEditMode(false);
 	};
 
-	return (
-		<div className="BasicInfo-container">
-			<div className="BasicInfo-content-container">
-				{schema.map(({ label, key }) => {
-					const value = editMode ? formData[key] ?? "" : user[key];
-					if (!editMode && (value === undefined || value === null)) return null;
-					return (
-						<div className="BasicInfo-field" key={key}>
-							<span className="BasicInfo-term">{label}:</span>
-							{editMode ? (
-								<input value={value} onChange={handleChange(key)} />
-							) : (
-								<span className="BasicInfo-desc">{value}</span>
-							)}
-						</div>
-					);
-				})}
+	const handleDelete = async () => {
+		if (!window.confirm("Are you sure you want to delete this client?")) return;
+		try {
+			const res = await fetch(`http://localhost:8000/clients/${user.id}`, {
+				method: "DELETE",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${access_token}`,
+				},
+			});
+			if (!res.ok) {
+				const errData = await res.json();
+				throw new Error(errData.detail || "Failed to delete client");
+			}
+			queryClient.setQueryData(["clients"], (oldData) =>
+				oldData ? oldData.filter((c) => c.id !== user.id) : []
+			);
+			navigate("/data");
+		} catch (err) {
+			console.error(err);
+			alert(err.message);
+		}
+	};
+
+	if (loading) return <p>Loading…</p>;
+	if (error)
+		return (
+			<div className="BasicInfo-container">
+				<Link to="/data">← Back</Link>
+				<p style={{ color: "red" }}>{error}</p>
 			</div>
-			{editMode ? (
-				<div className="BasicInfo-actions">
-					<button onClick={handleSave}>Save</button>
-					<button onClick={handleCancel}>Cancel</button>
+		);
+	if (user === undefined)
+		return (
+			<div className="BasicInfo-container">
+				<Link to="/data">← Back</Link>
+				<p>User not found.</p>
+			</div>
+		);
+
+	return (
+		<div>
+			<div className="BasicInfo-container">
+				<div className="BasicInfo-content-container">
+					{schema.map(({ label, key }) => {
+						const value = editMode ? formData[key] ?? "" : user[key];
+						if (!editMode && (value === undefined || value === null))
+							return null;
+						return (
+							<div className="BasicInfo-field" key={key}>
+								<span className="BasicInfo-term">{label}:</span>
+								{editMode ? (
+									<input value={value} onChange={handleChange(key)} />
+								) : (
+									<span className="BasicInfo-desc">{value}</span>
+								)}
+							</div>
+						);
+					})}
 				</div>
-			) : (
-				<div className="edit-button-div">
-					<button
-						onClick={() => setEditMode(true)}
-						className="BasicInfo-edit-button">
-						Update
+
+				{editMode ? (
+					<div className="BasicInfo-actions">
+						<button onClick={handleSave}>Save</button>
+						<button onClick={handleCancel}>Cancel</button>
+					</div>
+				) : (
+					<div className="edit-button-div">
+						<button
+							onClick={() => setEditMode(true)}
+							className="BasicInfo-edit-button">
+							Update
+						</button>
+					</div>
+				)}
+			</div>
+			{(role === "admin" || role === "super_admin") && !editMode && (
+				<div className="delete-button-div">
+					<button onClick={handleDelete} className="BasicInfo-delete-button">
+						Delete
 					</button>
 				</div>
 			)}

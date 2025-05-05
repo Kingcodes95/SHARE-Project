@@ -69,3 +69,15 @@
 	border: 1px solid #ccc;
 	border-radius: 4px;
 }
+.delete-button-div {
+	display: flex;
+	justify-content: center;
+}
+.delete-button-div button {
+	color: white;
+	background-color: red;
+	padding: .5rem;
+	border-radius: 5px;
+	border-style: none;
+	cursor: pointer;
+}

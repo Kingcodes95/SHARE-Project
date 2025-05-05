@@ -1,6 +1,7 @@
 from .supabase_client import supabase
 from fastapi import APIRouter, HTTPException, status, Depends, Body
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from .depends import role_required, get_current_user
 
 
 auth_bearer = HTTPBearer()
@@ -58,6 +59,25 @@ def create_client(new_client: dict = Body(...)):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Could not create account")
 
 
+@router.delete("/{client_id}")
+def deleted_client(
+    client_id: int,
+    # user: dict = Depends(get_current_user)
+):
+    # print("User object from token/session:", user)
+    # if user not in ['admin', 'super_admin']:
+    #     raise HTTPException(status_code=403, detail="Not Authorized")
+    
+    try:
+        supabase.table('Share-Clients').delete().eq('id', client_id).execute()
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Client not found')
+
+
+
+
+# to delete a record
+# supabase.table('Share-Users').delete().eq('id', 500).execute()
 
 
 # new_row = {
