@@ -14,26 +14,25 @@ import PersonDetail from "./pages/PeopleDetail";
 import New_Client from "./pages/New_Client";
 
 function App() {
-	function TokenCleanup() {
-		useEffect(() => {
-			const handleUnload = () => {
-				localStorage.removeItem("access_token");
-				localStorage.removeItem("refresh_token");
-			};
+	// function TokenCleanup() {
+	// 	useEffect(() => {
+	// 		const handleUnload = () => {
+	// 			localStorage.removeItem("access_token");
+	// 			localStorage.removeItem("refresh_token");
+	// 		};
 
-			window.addEventListener("beforeunload", handleUnload);
+	// 		window.addEventListener("beforeunload", handleUnload);
 
-			return () => {
-				window.removeEventListener("beforeunload", handleUnload);
-			};
-		}, []);
+	// 		return () => {
+	// 			window.removeEventListener("beforeunload", handleUnload);
+	// 		};
+	// 	}, []);
 
-		return null;
-	}
+	// 	return null;
+	// }
 
 	return (
 		<>
-			<TokenCleanup />
 			<Router>
 				<Routes>
 					<Route path="/" element={<Navigate to="/login" replace />} />
