@@ -72,18 +72,15 @@ export default function BasicInfo() {
 
 	const handleSave = async () => {
 		const updates = {};
-
 		for (const key in formData) {
 			if (formData[key] !== user[key]) {
 				updates[key] = formData[key];
 			}
 		}
-
 		if (Object.keys(updates).length === 0) {
 			setEditMode(false);
 			return;
 		}
-
 		try {
 			const res = await fetch(`http://localhost:8000/clients/${user.id}`, {
 				method: "PATCH",
@@ -92,25 +89,17 @@ export default function BasicInfo() {
 				},
 				body: JSON.stringify(updates),
 			});
-
-      // console.log("Saving user with ID:", user.id);
-      // console.log("Updates payload:", updates);
-
-
 			if (!res.ok) {
 				throw new Error("Failed to update user");
 			}
-
 			const updatedUser = await res.json();
 			setUser(updatedUser);
 			setFormData(updatedUser);
 			setEditMode(false);
-
 			queryClient.setQueryData(["clients"], (oldData) => {
 				if (!oldData) return oldData;
 				return oldData.map((c) => (c.id === updatedUser.id ? updatedUser : c));
 			});
-
 		} catch (err) {
 			setError(err.message);
 		}
@@ -125,8 +114,8 @@ export default function BasicInfo() {
 		<div className="BasicInfo-container">
 			<div className="BasicInfo-content-container">
 				{schema.map(({ label, key }) => {
-					const value = editMode ? formData[key] : user[key];
-					if (value === undefined || value === null) return null;
+					const value = editMode ? formData[key] ?? "" : user[key];
+					if (!editMode && (value === undefined || value === null)) return null;
 					return (
 						<div className="BasicInfo-field" key={key}>
 							<span className="BasicInfo-term">{label}:</span>
